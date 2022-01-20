@@ -1,0 +1,4 @@
+{{>/home/gabor/Development/Workspaces/C/Test02/cgi-bin/templates/html_start.template}}
+{{>/home/gabor/Development/Workspaces/C/Test02/cgi-bin/templates/navbar.template}}
+    <h1>Hello, {{USER}}</h1>
+{{>/home/gabor/Development/Workspaces/C/Test02/cgi-bin/templates/html_end.template}}

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+readonly rootdir=/home/gabor/Development/Workspaces/C/Test02/cgi-bin
+readonly templatedir=${rootdir}/templates
+
+function render {
+  cat ${templatedir}/$1 | sed "s/{{USER}}/$USER/g" | sed "s/{{PAGE_TITLE}}/$PAGE_TITLE/g"
+}
+
+function main {
+  echo "Content-type: text/html"
+  echo ""
+  export USER="World"
+  export PAGE_TITLE="Index"
+  render big.index.template
+}
+
+main

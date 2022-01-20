@@ -1,4 +1,4 @@
-package cgiserver;
+package cgiserver.http;
 
 import java.util.Arrays;
 

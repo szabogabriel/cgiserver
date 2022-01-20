@@ -1,4 +1,4 @@
-package cgiserver;
+package cgiserver.http;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,19 +6,24 @@ import java.net.Socket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import cgiserver.config.Configuration;
+import cgiserver.exec.ScriptExecutor;
+
 public class CGIServer implements Runnable {
 
-    private final Configuration CONFIGURATION;
     private final ServerSocket SERVER;
     private final Executor EXECUTOR;
     private final ScriptExecutor SCRIPT_EXECUTOR;
+    private final int PREFIX_LENGTH;
+    private final String SCRIPT_FOLDER;
 
     public CGIServer(final Configuration configuration, ScriptExecutor scriptExecutor) throws IOException {
-        this.CONFIGURATION = configuration;
+        this.PREFIX_LENGTH = configuration.getUrlPrefix().length();
+        this.SCRIPT_FOLDER = configuration.getCgiScriptFolder();
         this.SERVER = new ServerSocket(
-            CONFIGURATION.getPort(),
-            CONFIGURATION.getSocketBacklog(),
-            CONFIGURATION.getHost());
+        		configuration.getPort(),
+        		configuration.getSocketBacklog(),
+        		configuration.getHost());
         
         this.SCRIPT_EXECUTOR = scriptExecutor;
 
@@ -31,7 +36,7 @@ public class CGIServer implements Runnable {
             try {
                 Socket socket = SERVER.accept();
 
-                EXECUTOR.execute(new SocketHandler(socket, CONFIGURATION, SCRIPT_EXECUTOR));
+                EXECUTOR.execute(new SocketHandler(socket, PREFIX_LENGTH, SCRIPT_FOLDER, SCRIPT_EXECUTOR));
             } catch (IOException e) {
                 e.printStackTrace();
             }

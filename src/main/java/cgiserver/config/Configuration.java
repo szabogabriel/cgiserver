@@ -1,4 +1,4 @@
-package cgiserver;
+package cgiserver.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -6,13 +6,13 @@ import java.net.UnknownHostException;
 import lombok.Data;
 
 @Data
-public class Configuration implements SocketHandlerConfig {
+public class Configuration {
 
     private String urlPrefix = "";
     private String cgiScriptFolder = "./cgi-bin";
     private String execDir = ".";
     private boolean help = false;
-    private int port = 8080;
+    private int port = 9080;
     private int parallelThreads = 32;
     private int socketBacklog = 32;
     private InetAddress host;

@@ -1,4 +1,4 @@
-package cgiserver;
+package cgiserver.http;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,16 +8,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cgiserver.exec.ScriptExecutor;
 
 public class SocketHandler implements Runnable {
 
     private static final Pattern FIRST_LINE_PATTERN = Pattern.compile("^(GET|POST|PUT|DELETE|OPTIONS|HEAD|TRACE|CONNECT)\\s(.*)\\s(HTTP)\\/(.*)$");
 
-    private final Logger LOG = Logger.getLogger(SocketHandler.class.getName());
+//    private final Logger LOG = Logger.getLogger(SocketHandler.class.getName());
     private final Socket SOCKET;
     private final int PREFIX_LENGTH;
     private final String SCRIPT_FOLDER;
@@ -26,16 +26,16 @@ public class SocketHandler implements Runnable {
     private CGIRequestParams params = new CGIRequestParams();
     private String scriptToCall = null;
 
-    public SocketHandler(final Socket socket, final SocketHandlerConfig config, ScriptExecutor executor) {
+    public SocketHandler(final Socket socket, int urlPrefixLength, String scriptFolder, ScriptExecutor executor) {
         this.SOCKET = socket;
-        this.PREFIX_LENGTH = config.getUrlPrefix().length() + 1;
-        this.SCRIPT_FOLDER = config.getCgiScriptFolder();
+        this.PREFIX_LENGTH = urlPrefixLength + 1;
+        this.SCRIPT_FOLDER = scriptFolder;
         this.SCRIPT_EXECUTOR = executor;
     }
 
     @Override
     public void run() {
-        LOG.entering(getClass().getName(), "run");
+//        LOG.entering(getClass().getName(), "run");
         String line;
         BufferedReader in;
         try {
@@ -52,13 +52,14 @@ public class SocketHandler implements Runnable {
 
             runScript();
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, e.getMessage());
+//            LOG.log(Level.SEVERE, e.getMessage());
+            e.printStackTrace();
         }
-        LOG.exiting(getClass().getName(), "run");
+//        LOG.exiting(getClass().getName(), "run");
     }
 
     private void runScript() throws IOException {
-        LOG.entering(getClass().getName(), "runScript");
+//        LOG.entering(getClass().getName(), "runScript");
         Optional<File> script = getScript(scriptToCall);
         
         if (script.isPresent()) {
@@ -68,11 +69,11 @@ public class SocketHandler implements Runnable {
             SOCKET.getOutputStream().write("HTTP/1.1 404 ERROR\n\n".getBytes());
             SOCKET.getOutputStream().close();
         }
-        LOG.exiting(getClass().getName(), "runScript");
+//        LOG.exiting(getClass().getName(), "runScript");
     }
 
     private void handleHttpRequestLine(String line) {
-        LOG.entering(getClass().getName(), "handleHttpRequestLine", line);
+//        LOG.entering(getClass().getName(), "handleHttpRequestLine", line);
         if (line != null) {
             Matcher matcher = FIRST_LINE_PATTERN.matcher(line);
             if (matcher.matches()) {
@@ -86,22 +87,22 @@ public class SocketHandler implements Runnable {
                 scriptToCall = getScriptToCall(path);
             }
         }
-        LOG.exiting(getClass().getName(), "handleHttpRequestLine");
+//        LOG.exiting(getClass().getName(), "handleHttpRequestLine");
     }
 
     private void handleHttpHeaderLine(String line) {
-        LOG.entering(getClass().getName(), "handleHttpHeaderLine", line);
+//        LOG.entering(getClass().getName(), "handleHttpHeaderLine", line);
         if (line.contains(":")) {
             int poz = line.indexOf(":");
             String key = line.substring(0, poz).trim();
             String value = line.substring(poz + 1).trim();
             params.add(key, value);
         }
-        LOG.exiting(getClass().getName(), "handleHttpHeaderLine");
+//        LOG.exiting(getClass().getName(), "handleHttpHeaderLine");
     }
 
     private Optional<File> getScript(String script) {
-        LOG.entering(getClass().getName(), "getScript", script);
+//        LOG.entering(getClass().getName(), "getScript", script);
         Optional<File> ret = Optional.empty();
         if (script != null && script.contains(SCRIPT_FOLDER) && !script.contains("..")) {
             File scriptToCall = new File(script);
@@ -109,35 +110,35 @@ public class SocketHandler implements Runnable {
                 ret = Optional.of(scriptToCall);
             }
         }
-        LOG.exiting(getClass().getName(), "getScript", ret);
+//        LOG.exiting(getClass().getName(), "getScript", ret);
         return ret;
     }
 
     private void handle(File script, String[] params, InputStream in, OutputStream out) {
-        LOG.entering(getClass().getName(), "handle", params);
+//        LOG.entering(getClass().getName(), "handle", params);
         SCRIPT_EXECUTOR.execute(script, params, in, out);
-        LOG.exiting(getClass().getName(), "handle");
+//        LOG.exiting(getClass().getName(), "handle");
     }
 
     private String getQueryString(String path) {
-        LOG.entering(getClass().getName(), "getQueryString", path);
+//        LOG.entering(getClass().getName(), "getQueryString", path);
         String ret = "";
         int qsPosition = path.indexOf("?");
         if (qsPosition != -1 && path.length() > qsPosition + 1) {
             ret = path.substring(qsPosition + 1);
         }
-        LOG.exiting(getClass().getName(), "getQueryString", ret);
+//        LOG.exiting(getClass().getName(), "getQueryString", ret);
         return ret;
     }
 
     private String getScriptToCall(String path) {
-        LOG.entering(getClass().getName(), "getScriptToCall", path);
+//        LOG.entering(getClass().getName(), "getScriptToCall", path);
         String ret = SCRIPT_FOLDER + File.separator + path.substring(PREFIX_LENGTH);
         int qsPosition = ret.indexOf("?");
         if (qsPosition != -1) {
             ret = ret.substring(0, qsPosition);
         }
-        LOG.exiting(getClass().getName(), "getScriptToCall", ret);
+//        LOG.exiting(getClass().getName(), "getScriptToCall", ret);
         return ret;
     }
 

@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import cgiserver.config.Configuration;
+import cgiserver.exec.ScriptExecutor;
+import cgiserver.http.CGIServer;
+
 public final class App {
 
     private CGIServer server;
@@ -11,7 +15,7 @@ public final class App {
     private ScriptExecutor scriptExecutor;
 
     private App(Configuration args) throws UnknownHostException, IOException {
-        scriptExecutor = new ScriptExecutor(new File(args.getExecDir()), args.getParallelThreads() * 3);
+        scriptExecutor = new ScriptExecutor(new File(args.getExecDir()));
 
         server = new CGIServer(args, scriptExecutor);
         server.run();

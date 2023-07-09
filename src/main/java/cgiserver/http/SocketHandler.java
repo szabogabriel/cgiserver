@@ -79,6 +79,9 @@ public class SocketHandler implements Runnable {
             if (matcher.matches()) {
                 params.setMethod(matcher.group(1));
                 String path = matcher.group(2);
+		if (path == null || path.trim().length() == 0 || "/".equals(path)){
+			path = "/index";
+		}
                 params.setPath(path);
                 params.setProtocolType(matcher.group(3));
                 params.setProtocolVersion(matcher.group(4));

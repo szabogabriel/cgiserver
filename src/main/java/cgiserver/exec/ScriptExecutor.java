@@ -14,15 +14,20 @@ public class ScriptExecutor {
 	}
 
 	public void execute(File scriptToRun, String[] params, InputStream in, OutputStream out) {
+		Process process = null;
 		try {
 			String name = scriptToRun.getName();
 
-			Process process = createProcess(scriptToRun, params);
+			process = createProcess(scriptToRun, params);
 
 			redirectProcessPipes(process, in, out, name);
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (process != null && process.isAlive()){
+				try { process.destroy(); } catch (Exception ex) {}
+			}
 		}
 	}
 

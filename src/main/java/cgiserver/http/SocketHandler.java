@@ -22,15 +22,17 @@ public class SocketHandler implements Runnable {
     private final int PREFIX_LENGTH;
     private final String SCRIPT_FOLDER;
     private final ScriptExecutor SCRIPT_EXECUTOR;
+    private final String INDEX;
 
     private CGIRequestParams params = new CGIRequestParams();
     private String scriptToCall = null;
 
-    public SocketHandler(final Socket socket, int urlPrefixLength, String scriptFolder, ScriptExecutor executor) {
+    public SocketHandler(final Socket socket, int urlPrefixLength, String scriptFolder, ScriptExecutor executor, String index) {
         this.SOCKET = socket;
         this.PREFIX_LENGTH = urlPrefixLength + 1;
         this.SCRIPT_FOLDER = scriptFolder;
         this.SCRIPT_EXECUTOR = executor;
+        this.INDEX = index;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class SocketHandler implements Runnable {
                 params.setMethod(matcher.group(1));
                 String path = matcher.group(2);
 		if (path == null || path.trim().length() == 0 || "/".equals(path)){
-			path = "/index";
+			path = "/" + INDEX;
 		}
                 params.setPath(path);
                 params.setProtocolType(matcher.group(3));

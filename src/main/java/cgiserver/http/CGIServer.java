@@ -16,10 +16,12 @@ public class CGIServer implements Runnable {
     private final ScriptExecutor SCRIPT_EXECUTOR;
     private final int PREFIX_LENGTH;
     private final String SCRIPT_FOLDER;
+    private final String INDEX;
 
     public CGIServer(final Configuration configuration, ScriptExecutor scriptExecutor) throws IOException {
         this.PREFIX_LENGTH = configuration.getUrlPrefix().length();
         this.SCRIPT_FOLDER = configuration.getCgiScriptFolder();
+        this.INDEX = configuration.getIndex();
         this.SERVER = new ServerSocket(
         		configuration.getPort(),
         		configuration.getSocketBacklog(),
@@ -36,7 +38,7 @@ public class CGIServer implements Runnable {
             try {
                 Socket socket = SERVER.accept();
 
-                EXECUTOR.execute(new SocketHandler(socket, PREFIX_LENGTH, SCRIPT_FOLDER, SCRIPT_EXECUTOR));
+                EXECUTOR.execute(new SocketHandler(socket, PREFIX_LENGTH, SCRIPT_FOLDER, SCRIPT_EXECUTOR, INDEX));
             } catch (IOException e) {
                 e.printStackTrace();
             }

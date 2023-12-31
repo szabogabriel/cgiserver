@@ -3,8 +3,12 @@ package cgiserver;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 import cgiserver.config.Configuration;
+import cgiserver.config.Configurations;
 import cgiserver.exec.ScriptExecutor;
 import cgiserver.http.CGIServer;
 
@@ -22,15 +26,26 @@ public final class App {
     }
 
     public static void main(String[] args) throws UnknownHostException, IOException {
-        Configuration config = new Configuration(args);
+        Configurations configs = new Configurations(args);
 
         System.out.println("Starting.");
 
-        if (config.isHelp()) {
+        if (configs.isHelp()) {
             printHelp();
             return;
         } else {
-            new App(config);
+            List<Configuration> confs = configs.getConfig();
+            for(Configuration it : confs) {
+                new Thread(() -> runApp(it)).start(); 
+            }
+        }
+    }
+
+    private static void runApp(Configuration configuration) {
+        try {
+            new App(configuration);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

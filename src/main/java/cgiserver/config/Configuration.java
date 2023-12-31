@@ -2,6 +2,9 @@ package cgiserver.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Data;
 
@@ -23,19 +26,29 @@ public class Configuration {
     }
 
     public Configuration(String[] args) throws UnknownHostException {
+        this(args, "");
+    }
+
+    public Configuration(String[] args, int suffix) throws UnknownHostException {
+        this(args, "." + suffix);
+    }
+
+    private Configuration(String[] args, String suffix) throws UnknownHostException {
         host = InetAddress.getByName("localhost");
 
-        for (int i = 0; i < args.length; i++) {
+        List<String> argsFiltered = Arrays.asList(args).stream().filter(e -> e.endsWith(suffix)).collect(Collectors.toList());
+
+        for (int i = 0; i < argsFiltered.size(); i++) {
             switch(args[i]) {
-                case "-cgiFolder" : cgiScriptFolder = args[++i]; break;
-                case "-execFolder" : execDir = args[++i]; break;
-                case "-urlPrefix" : urlPrefix = args[++i]; break;
+                case "-cgiFolder" : cgiScriptFolder = argsFiltered.get(++i); break;
+                case "-execFolder" : execDir = argsFiltered.get(++i); break;
+                case "-urlPrefix" : urlPrefix = argsFiltered.get(++i); break;
                 case "-help" : help = true; break;
-                case "-port" : port = Integer.parseInt(args[++i]); break;
-                case "-threads" : parallelThreads = Integer.parseInt(args[++i]); break;
-                case "-socketBacklog" : socketBacklog = Integer.parseInt(args[++i]); break;
-                case "-host" : host = InetAddress.getByName(args[++i]);
-                case "-index" : index = args[++i];
+                case "-port" : port = Integer.parseInt(argsFiltered.get(++i)); break;
+                case "-threads" : parallelThreads = Integer.parseInt(argsFiltered.get(++i)); break;
+                case "-socketBacklog" : socketBacklog = Integer.parseInt(argsFiltered.get(++i)); break;
+                case "-host" : host = InetAddress.getByName(argsFiltered.get(++i));
+                case "-index" : index = argsFiltered.get(++i);
             }
         }
     }

@@ -46,8 +46,8 @@ public class Configuration {
                 case "-port" : port = Integer.parseInt(argsFiltered.get(++i)); break;
                 case "-threads" : parallelThreads = Integer.parseInt(argsFiltered.get(++i)); break;
                 case "-socketBacklog" : socketBacklog = Integer.parseInt(argsFiltered.get(++i)); break;
-                case "-host" : host = InetAddress.getByName(argsFiltered.get(++i));
-                case "-index" : index = argsFiltered.get(++i);
+                case "-host" : host = InetAddress.getByName(argsFiltered.get(++i)); break;
+                case "-index" : index = argsFiltered.get(++i); break;
             }
         }
     }

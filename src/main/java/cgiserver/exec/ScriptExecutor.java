@@ -13,12 +13,16 @@ public class ScriptExecutor {
 		this.EXEC_DIR = execDir;
 	}
 
-	public void execute(File scriptToRun, String[] params, InputStream in, OutputStream out) {
+	public void execute(File scriptToRun, String[] env, InputStream in, OutputStream out) {
+		execute(scriptToRun, new String[]{}, env, in, out);
+	}
+
+	public void execute(File scriptToRun, String[] params, String[] env, InputStream in, OutputStream out) {
 		Process process = null;
 		try {
 			String name = scriptToRun.getName();
 
-			process = createProcess(scriptToRun, params);
+			process = createProcess(scriptToRun, params, env);
 
 			redirectProcessPipes(process, in, out, name);
 
@@ -33,14 +37,14 @@ public class ScriptExecutor {
 
 	private void redirectProcessPipes(Process process, InputStream in, OutputStream out, String name)
 			throws IOException {
-		InputStream tmpIn = process.getInputStream();
-		OutputStream tmpOut = process.getOutputStream();
+		InputStream processIn = process.getInputStream();
+		OutputStream processOut = process.getOutputStream();
 
 		do {
-			handleRedirects(process, in, out, tmpIn, tmpOut);
+			handleRedirects(process, in, out, processIn, processOut);
 		} while (process.isAlive());
 
-		handleRedirects(process, in, out, tmpIn, tmpOut);
+		handleRedirects(process, in, out, processIn, processOut);
 		
 		out.close();
 		in.close();
@@ -64,8 +68,17 @@ public class ScriptExecutor {
 		}
 	}
 
-	private Process createProcess(File scriptToRun, String[] params) throws IOException {
-		Process process = Runtime.getRuntime().exec(scriptToRun.getAbsolutePath(), params, EXEC_DIR);
+	private Process createProcess(File scriptToRun, String [] params, String[] env) throws IOException {
+		String cmd = scriptToRun.getAbsolutePath();
+		String args = "";
+
+		if (params != null) {
+			for (String it : params) {
+				args += " " + it;
+			}
+		}
+
+		Process process = Runtime.getRuntime().exec(cmd + args, env, EXEC_DIR);
 		return process;
 	}
 

@@ -2,9 +2,8 @@ package cgiserver.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.Data;
 
@@ -36,10 +35,10 @@ public class Configuration {
     private Configuration(String[] args, String suffix) throws UnknownHostException {
         host = InetAddress.getByName("localhost");
 
-        List<String> argsFiltered = Arrays.asList(args).stream().filter(e -> e.endsWith(suffix)).collect(Collectors.toList());
+        List<String> argsFiltered = filterArguments(args, suffix);
 
         for (int i = 0; i < argsFiltered.size(); i++) {
-            switch(args[i]) {
+            switch(argsFiltered.get(i)) {
                 case "-cgiFolder" : cgiScriptFolder = argsFiltered.get(++i); break;
                 case "-execFolder" : execDir = argsFiltered.get(++i); break;
                 case "-urlPrefix" : urlPrefix = argsFiltered.get(++i); break;
@@ -51,5 +50,23 @@ public class Configuration {
                 case "-index" : index = argsFiltered.get(++i);
             }
         }
+    }
+
+    private List<String> filterArguments(String [] args, String suffix) {
+        List<String> ret = new ArrayList<>();
+        for (int i = 0; i < args.length; i++) {
+            if ("-help".equals(args[i])) {
+                ret.add(args[i]);
+            } else
+            if (args[i].endsWith(suffix)) {
+                ret.add(args[i].substring(0, args[i].length() - suffix.length()));
+                ret.add(args[++i]);
+            } else 
+            if (args[i].startsWith("-") && !args[i].contains(".")) {
+                ret.add(args[i]);
+                ret.add(args[++i]);
+            }
+        }
+        return ret;
     }
 }

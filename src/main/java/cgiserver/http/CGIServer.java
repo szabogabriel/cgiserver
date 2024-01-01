@@ -19,6 +19,7 @@ public class CGIServer implements Runnable {
     private final String INDEX;
 
     public CGIServer(final Configuration configuration, ScriptExecutor scriptExecutor) throws IOException {
+        System.out.println("Starting server on port " + configuration.getPort());
         this.PREFIX_LENGTH = configuration.getUrlPrefix().length();
         this.SCRIPT_FOLDER = configuration.getCgiScriptFolder();
         this.INDEX = configuration.getIndex();

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
-
 import cgiserver.config.Configuration;
 import cgiserver.config.Configurations;
 import cgiserver.exec.ScriptExecutor;

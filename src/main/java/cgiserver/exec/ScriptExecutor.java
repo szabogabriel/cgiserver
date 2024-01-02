@@ -50,17 +50,17 @@ public class ScriptExecutor {
 		in.close();
 	}
 
-	private void handleRedirects(Process process, InputStream in, OutputStream out, InputStream tmpIn,
-			OutputStream tmpOut) throws IOException {
+	private void handleRedirects(Process process, InputStream stdIn, OutputStream stdOut, InputStream procIn,
+			OutputStream procOut) throws IOException {
 		byte[] buffer = new byte[128];
 		int read;
-		while (in.available() > 0) {
-			read = in.read(buffer);
-			tmpOut.write(buffer, 0, read);
+		while (stdIn.available() > 0) {
+			read = stdIn.read(buffer);
+			procOut.write(buffer, 0, read);
 		}
-		while (tmpIn.available() > 0) {
-			read = tmpIn.read(buffer);
-			out.write(buffer, 0, read);
+		while (procIn.available() > 0) {
+			read = procIn.read(buffer);
+			stdOut.write(buffer, 0, read);
 		}
 		while (process.getErrorStream().available() > 0) {
 			read = process.getErrorStream().read(buffer);

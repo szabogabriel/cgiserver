@@ -28,7 +28,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void testWithUserInput() throws IOException {
+    public void testWithRequestParamInput() throws IOException {
         ScriptExecutor executor = new ScriptExecutor(new File("/tmp"));
 
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte [] {});
@@ -57,6 +57,23 @@ public class ScriptExecutorTest {
         bais.close();
 
         assertEquals("value\n", dataReceived);  
+    }
+
+    // @Test
+    public void testWithStreamInput() throws IOException, InterruptedException {
+        ScriptExecutor executor = new ScriptExecutor(new File("/tmp"));
+
+        ByteArrayInputStream bais = new ByteArrayInputStream("Hello, World!\n".getBytes());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Thread t = new Thread(() -> executor.execute(new File("src/test/resources/testRead.sh"), new String[]{}, new String[]{"CUSTOM=value"}, bais, baos));
+        t.start();
+        bais.close();
+        t.join();
+        
+        String dataReceived = baos.toString();
+
+        assertEquals("Hello, World!\n", dataReceived);  
     }
     
 }

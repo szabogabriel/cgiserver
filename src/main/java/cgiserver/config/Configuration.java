@@ -43,11 +43,13 @@ public class Configuration {
                 case "-execFolder" : execDir = argsFiltered.get(++i); break;
                 case "-urlPrefix" : urlPrefix = argsFiltered.get(++i); break;
                 case "-help" : help = true; break;
+                case "-h" : help = true; break;
                 case "-port" : port = Integer.parseInt(argsFiltered.get(++i)); break;
                 case "-threads" : parallelThreads = Integer.parseInt(argsFiltered.get(++i)); break;
                 case "-socketBacklog" : socketBacklog = Integer.parseInt(argsFiltered.get(++i)); break;
                 case "-host" : host = InetAddress.getByName(argsFiltered.get(++i)); break;
                 case "-index" : index = argsFiltered.get(++i); break;
+                default:System.out.println("Switch " + argsFiltered.get(i) + " is not known. Run with -help attribute for more info."); help = true; break;
             }
         }
     }
